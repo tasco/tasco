@@ -44,7 +44,7 @@ cli.command('*', (input, flags) => {
   }
 })
 
-cli.command('help', 'List', (input, flags) => {
+cli.command('help', 'Print description for tasks', (input, flags) => {
   const taskName = input[0]
   const taskFile = path.resolve('taskfile.js')
   const content = fs.readFileSync(taskFile, 'utf8')
