@@ -1,15 +1,19 @@
 import * as babel from 'babel-core'
 // The default task
 export default async function (t) {
-  await t.parallel('js')
+  await t.parallel('js', 'css')
 }
 
 // Transform css using PostCSS
 // Using postcss-cssnext
 export async function css(t) {
   await t
-    .input('./css/*.css')
-    .postcss()
+    .input('./example/*.css')
+    .pipe(function () {
+      this.files.forEach((file, index) => {
+        this.files[index].content += 'lol'
+      })
+    })
     .output('./dist/css/')
 }
 
