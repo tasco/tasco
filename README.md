@@ -92,6 +92,10 @@ Run multiple tasks in parallel.
 
 Run multiple tasks in sequence.
 
+#### t.single(task)
+
+Run a single task.
+
 #### plugin
 
 ##### plugin.name
