@@ -1,19 +1,20 @@
 import * as babel from 'babel-core'
-/*
-  Default task
-
-  Ever wanted to add help info to task?
-  You can!
-  run {{ chalk.yellow('`tasco help`') }} to list all task helps
-  run {{ chalk.yellow('`tasco help <taskName>`') }} to list full help for specific task
-*/
+// The default task
 export default async function (t) {
-  console.log('started!')
   await t.parallel('js')
 }
 
-// Build js files
-// Using babel
+// Transform css using PostCSS
+// Using postcss-cssnext
+export async function css(t) {
+  await t
+    .input('./css/*.css')
+    .postcss()
+    .output('./dist/css/')
+}
+
+// Transform js using Babel
+// Using babel-preset-es2015
 export async function js(t) {
   t.use({
     name: 'babel',
