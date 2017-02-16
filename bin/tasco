@@ -1,0 +1,118 @@
+#!/usr/bin/env node
+const fs = require('fs')
+const path = require('path')
+const cac = require('cac')
+const chalk = require('chalk')
+const babylon = require('babylon')
+const table = require('text-table')
+const vegito = require('vegito')
+const Task = require('../lib')
+
+const cli = cac()
+
+cli.command('*', (input, flags) => {
+  const taskFile = path.resolve('taskfile.js')
+  if (!fs.existsSync(taskFile)) {
+    return cli.showHelp()
+  }
+
+  require('babel-register')({
+    only: new RegExp(taskFile),
+    presets: [
+      require.resolve('babel-preset-latest'),
+      require.resolve('babel-preset-stage-2')
+    ],
+    plugins: [
+      require.resolve('babel-plugin-transform-runtime')
+    ]
+  })
+
+  const tasks = require(taskFile)
+  const taskName = input[0] || 'default'
+
+  const task = tasks[taskName]
+  if (task) {
+    const t = new Task(tasks)
+    task(t).catch(err => {
+      console.error(err)
+      process.exit(1)
+    })
+  } else {
+    console.log()
+    console.log(chalk.red(`  Missing task ${taskName} in task file.`))
+    console.log()
+  }
+})
+
+cli.command('help', 'List', (input, flags) => {
+  const taskName = input[0]
+  const taskFile = path.resolve('taskfile.js')
+  const content = fs.readFileSync(taskFile, 'utf8')
+  const {tokens} = babylon.parse(content, {sourceType: 'module', plugins: '*'})
+  const meta = getTaskMeta(tokens)
+  console.log()
+
+  if (taskName) {
+    if (typeof meta[taskName] !== 'undefined') {
+      console.log(`  ${chalk.cyan(taskName)}\n`)
+      console.log(meta[taskName])
+    } else {
+      console.log(`  Task ${taskName} was not defined in task file.`)
+    }
+  } else {
+    console.log(table(Object.keys(meta).map(name => [
+      `  ${chalk.cyan(name)}`,
+      meta[name].split('\n').filter(val => Boolean(val.trim())).shift()
+    ])))
+  }
+
+  console.log()
+})
+
+function getTaskMeta(tokens) {
+  const meta = {}
+  tokens.forEach((token, index) => {
+    if (token.type.label === 'export') {
+      let taskName
+      const nextToken = tokens[index + 1]
+      if (nextToken && nextToken.type.label === 'default') {
+        taskName = 'default'
+      } else {
+        taskName = getTaskName(tokens.slice(index))
+      }
+
+      meta[taskName] = []
+      const data = {chalk}
+
+      const getPrev = index => {
+        const prevIndex = index - 1
+        const prevToken = tokens[prevIndex]
+          if (prevToken && prevToken.value) {
+          const isCommentLine = prevToken.type === 'CommentLine'
+          const isCommentBlock = prevToken.type === 'CommentBlock'
+
+          if (isCommentLine) {
+            meta[taskName].unshift(`  ${vegito(prevToken.value.trim(), data)}`)
+            getPrev(prevIndex)
+          } else if (isCommentBlock) {
+            meta[taskName].unshift(vegito(prevToken.value, data))
+          }
+        }
+      }
+
+      getPrev(index)
+      meta[taskName] = meta[taskName].join('\n')
+    }
+  })
+  return meta
+}
+
+function getTaskName(tokens) {
+  for (const [index, token] of tokens.entries()) {
+    if (token.type.label === 'function') {
+      return tokens[index + 1].value
+    }
+  }
+}
+
+cli.parse()
