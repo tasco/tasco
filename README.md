@@ -84,6 +84,14 @@ Available variables:
 
 The directory to write files.
 
+#### t.parallel(tasks)
+
+Run multiple tasks in parallel.
+
+#### t.sequence(tasks)
+
+Run multiple tasks in sequence.
+
 #### plugin
 
 ##### plugin.name
