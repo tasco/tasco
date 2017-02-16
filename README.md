@@ -1,6 +1,6 @@
 # tasco
 
-[![NPM version](https://img.shields.io/npm/v/tasco.svg?style=flat)](https://npmjs.com/package/tasco) [![NPM downloads](https://img.shields.io/npm/dm/tasco.svg?style=flat)](https://npmjs.com/package/tasco) [![Build Status](https://img.shields.io/circleci/project/egoist/tasco/master.svg?style=flat)](https://circleci.com/gh/egoist/tasco) [![donate](https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&style=flat)](https://github.com/egoist/donate)
+[![NPM version](https://img.shields.io/npm/v/tasco.svg?style=flat)](https://npmjs.com/package/tasco) [![NPM downloads](https://img.shields.io/npm/dm/tasco.svg?style=flat)](https://npmjs.com/package/tasco) [![Build Status](https://img.shields.io/circleci/project/tasco/tasco/master.svg?style=flat)](https://circleci.com/gh/tasco/tasco) [![donate](https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&style=flat)](https://github.com/egoist/donate)
 
 ## Install
 
